@@ -1,0 +1,1017 @@
+/* =====================================================================
+   GEOVANE NEVES — PORTFÓLIO
+   Estrutura do arquivo (use Ctrl/Cmd+F para pular direto à seção):
+
+   1.  TOKENS ................. cores, tipografia, espaçamento, camadas
+   2.  RESET & BASE ........... normalização e estilos globais de elementos
+   3.  KEYFRAMES ............... todas as animações do site, num só lugar
+   4.  UTILITÁRIOS ............. classes reaproveitáveis (reveal, botões...)
+   5.  LAYOUT ................. contêineres e grade das seções
+   6.  COMPONENTES
+       6.1  Cursor & scanlines
+       6.2  Boot screen (splash de carregamento)
+       6.3  Navegação
+       6.4  Hero
+       6.5  Skills
+       6.6  Sobre mim
+       6.7  Projetos
+       6.8  Contato
+       6.9  Rodapé & Toast
+   7.  RESPONSIVO ............. media queries, da mais larga à mais estreita
+   ===================================================================== */
+
+
+/* =====================================================================
+   1. TOKENS
+   ===================================================================== */
+:root{
+  /* cores */
+  --bg:            #05070d;
+  --bg-panel:      #0b1020;
+  --bg-panel-2:    #0f1730;
+  --line:          rgba(0, 229, 255, 0.16);
+  --cyan:          #00e5ff;
+  --magenta:       #b15aff;
+  --amber:         #f2c15c;
+  --success:       #4dffb0;
+  --text:          #e7effa;
+  --text-muted:    #7c8bab;
+
+  /* tipografia */
+  --font-display:  'Orbitron', sans-serif;
+  --font-body:      'Rajdhani', sans-serif;
+  --font-mono:      'Share Tech Mono', monospace;
+
+  /* espaçamento (escala usada em padding/gap/margin) */
+  --space-xs:   8px;
+  --space-sm:   12px;
+  --space-md:   16px;
+  --space-lg:   24px;
+  --space-xl:   32px;
+  --space-2xl:  56px;
+  --space-3xl:  80px;
+
+  /* estrutura */
+  --container:      1100px;
+  --radius-sm:      2px;
+
+  /* movimento */
+  --ease-out:       cubic-bezier(.2, .8, .3, 1);
+  --transition-fast: .18s ease;
+  --transition-base: .25s ease;
+  --transition-slow: .7s ease;
+
+  /* camadas (z-index) — do fundo pra frente */
+  --z-scanlines:  2;
+  --z-nav:        100;
+  --z-cursor:     400;
+  --z-toast:      300;
+  --z-boot:       500;
+}
+
+
+/* =====================================================================
+   2. RESET & BASE
+   ===================================================================== */
+*{
+  box-sizing: border-box;
+}
+
+html{
+  scroll-behavior: smooth;
+}
+
+body{
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
+h1, h2{
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+p{
+  margin: 0;
+}
+
+a{
+  color: inherit;
+  text-decoration: none;
+}
+
+button{
+  background: none;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  cursor: none;
+}
+
+::selection{
+  background: var(--cyan);
+  color: #031014;
+}
+
+:focus-visible{
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+/* dispositivos sem mouse (touch) usam cursor padrão, sem a mira customizada */
+@media (hover: none){
+  body,
+  button{
+    cursor: pointer;
+  }
+}
+
+/* usuários que pedem menos movimento no sistema operacional */
+@media (prefers-reduced-motion: reduce){
+  html{
+    scroll-behavior: auto;
+  }
+  *{
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+
+/* =====================================================================
+   3. KEYFRAMES
+   ===================================================================== */
+@keyframes blink{
+  50%{ opacity: 0; }
+}
+
+@keyframes bob{
+  0%, 100%{ transform: translate(-50%, 0); }
+  50%{ transform: translate(-50%, 6px); }
+}
+
+@keyframes dots{
+  0%{ content: ''; }
+  25%{ content: '.'; }
+  50%{ content: '..'; }
+  75%{ content: '...'; }
+}
+
+@keyframes fill-bar{
+  to{ width: 100%; }
+}
+
+@keyframes line-in{
+  to{ opacity: 1; }
+}
+
+@keyframes boot-out{
+  to{ opacity: 0; visibility: hidden; }
+}
+
+@keyframes glitch-settle{
+  0%{   text-shadow: 2px 0 var(--magenta), -2px 0 var(--cyan);  transform: translate(2px, 0); }
+  20%{  text-shadow: -2px 0 var(--magenta), 2px 0 var(--cyan);  transform: translate(-2px, 0); }
+  40%{  text-shadow: 2px 0 var(--magenta), -2px 0 var(--cyan);  transform: translate(1px, 0); }
+  60%{  text-shadow: -1px 0 var(--magenta), 1px 0 var(--cyan);  transform: translate(-1px, 0); }
+  100%{ text-shadow: none; transform: translate(0, 0); }
+}
+
+
+/* =====================================================================
+   4. UTILITÁRIOS
+   ===================================================================== */
+
+/* rótulo pequeno acima dos títulos de seção, ex: "MOD.01 :: SKILLS" */
+.eyebrow{
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  color: var(--cyan);
+  letter-spacing: 1.5px;
+  margin-bottom: var(--space-md);
+}
+
+.section-title{
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: .02em;
+  margin-bottom: var(--space-2xl);
+}
+
+/* cursor piscante estilo terminal, usado em textos de log */
+.type-cursor{
+  color: var(--cyan);
+  animation: blink 1s steps(1) infinite;
+}
+
+/* entrada suave ao rolar a página — ativada via JS (classe .in-view) */
+.reveal{
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity var(--transition-slow), transform var(--transition-slow);
+}
+.reveal.in-view{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* botão de contorno usado no CTA principal do hero */
+.btn{
+  display: inline-block;
+  padding: 15px 30px;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: .9rem;
+  letter-spacing: 1px;
+  transition: transform var(--transition-fast), box-shadow var(--transition-base);
+}
+.btn:hover{
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* link de texto discreto, ex: "[ VER PROJETO ]" */
+.link-cta{
+  display: inline-block;
+  margin-top: var(--space-md);
+  font-family: var(--font-mono);
+  font-size: .85rem;
+  color: var(--cyan);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-base);
+}
+.link-cta:hover{
+  border-color: var(--cyan);
+}
+
+/* selo pequeno de aviso, ex: "edite com seu projeto real" */
+.cert-badge{
+  display: inline-block;
+  margin-bottom: var(--space-sm);
+  padding: 3px 9px;
+  border: 1px solid rgba(242, 193, 92, 0.35);
+  font-family: var(--font-mono);
+  font-size: .6rem;
+  letter-spacing: .5px;
+  color: var(--amber);
+}
+
+
+/* =====================================================================
+   5. LAYOUT
+   ===================================================================== */
+.section{
+  padding: 120px var(--space-lg);
+  position: relative;
+}
+
+.section-inner{
+  max-width: var(--container);
+  margin: 0 auto;
+}
+
+/* fundo levemente diferente para alternar seções visualmente (zebra) */
+.section-alt{
+  background: var(--bg-panel);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+
+/* =====================================================================
+   6. COMPONENTES
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   6.1 Cursor & scanlines
+   --------------------------------------------------------------------- */
+.scanlines{
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-scanlines);
+  opacity: .5;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.015) 0px,
+    rgba(255, 255, 255, 0.015) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+}
+
+.crosshair{
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-cursor);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.crosshair-ring{
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--cyan);
+  border-radius: 50%;
+  transition: width .15s ease, height .15s ease, border-color .15s ease;
+}
+.crosshair-ring::before,
+.crosshair-ring::after{
+  content: '';
+  position: absolute;
+  background: var(--cyan);
+}
+.crosshair-ring::before{ top: -9px; left: 50%; width: 1px; height: 7px; transform: translateX(-50%); }
+.crosshair-ring::after{ top: 50%; left: -9px; width: 7px; height: 1px; transform: translateY(-50%); }
+
+.crosshair.hovering .crosshair-ring{
+  width: 34px;
+  height: 34px;
+  border-color: var(--magenta);
+}
+
+/* ---------------------------------------------------------------------
+   6.2 Boot screen
+   --------------------------------------------------------------------- */
+.boot{
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-boot);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  animation: boot-out .5s ease 1.6s forwards;
+}
+
+.boot-box{
+  width: min(380px, 84vw);
+  font-family: var(--font-mono);
+  color: var(--cyan);
+}
+
+.boot-line{
+  margin-bottom: var(--space-sm);
+  font-size: .85rem;
+  opacity: 0;
+  animation: line-in .4s ease forwards;
+}
+.boot-line:nth-of-type(1){ animation-delay: .1s; }
+.boot-line:nth-of-type(2){ animation-delay: .6s; }
+.boot-line .ok{ color: var(--success); }
+
+.dots::after{
+  content: '';
+  display: inline-block;
+  width: 1ch;
+  animation: dots 1s steps(4) infinite;
+}
+
+.boot-bar{
+  height: 3px;
+  margin-top: var(--space-md);
+  overflow: hidden;
+  background: rgba(0, 229, 255, 0.12);
+}
+.boot-bar-fill{
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  animation: fill-bar 1.1s ease .5s forwards;
+}
+
+/* ---------------------------------------------------------------------
+   6.3 Navegação
+   --------------------------------------------------------------------- */
+.nav{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-nav);
+  background: rgba(5, 7, 13, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+.nav.scrolled{
+  background: rgba(5, 7, 13, 0.92);
+  border-bottom-color: var(--line);
+}
+
+.nav-inner{
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo{
+  font-family: var(--font-display);
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  color: var(--cyan);
+}
+.logo-dim{
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.nav-links{
+  display: flex;
+  gap: var(--space-xl);
+}
+.nav-links a{
+  position: relative;
+  padding: 4px 0;
+  font-family: var(--font-mono);
+  font-size: .82rem;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  transition: color var(--transition-base);
+}
+.nav-links a::after{
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 1px;
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  transition: width var(--transition-base);
+}
+.nav-links a:hover,
+.nav-links a.active{
+  color: var(--text);
+}
+.nav-links a.active::after{
+  width: 100%;
+}
+
+.nav-toggle{
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+}
+.nav-toggle span{
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--cyan);
+  transition: .25s ease;
+}
+.nav-toggle.open span:nth-child(1){ transform: translateY(7px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2){ opacity: 0; }
+.nav-toggle.open span:nth-child(3){ transform: translateY(-7px) rotate(-45deg); }
+
+/* barra fina que mostra o progresso de leitura da página */
+.nav-progress{
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+/* ---------------------------------------------------------------------
+   6.4 Hero
+   --------------------------------------------------------------------- */
+.hero{
+  position: relative;
+  min-height: 100vh;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* fundo interativo desenhado via JS (pontos flutuantes + conexão com o mouse) */
+.net-canvas{
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-inner{
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+
+.hero-title{
+  position: relative;
+  margin-bottom: var(--space-lg);
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 800;
+  letter-spacing: .02em;
+  color: var(--text);
+}
+.glitch{
+  animation: glitch-settle 1.1s ease 1.9s 1;
+}
+
+.hero-phrase{
+  margin-bottom: var(--space-xl);
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--text-muted);
+}
+
+.scroll-cue{
+  position: absolute;
+  bottom: 34px;
+  left: 50%;
+  z-index: 1;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  letter-spacing: 1px;
+  color: var(--cyan);
+  animation: bob 2.2s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------------------
+   6.5 Skills
+   --------------------------------------------------------------------- */
+.hex-grid{
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+}
+
+.hex-card{
+  position: relative;
+  width: 170px;
+  padding: 32px 16px 22px;
+  background: var(--bg-panel-2);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  text-align: center;
+  transition: transform var(--transition-base), background var(--transition-base);
+}
+.hex-card:hover{
+  background: #141d3c;
+  transform: translateY(-6px);
+}
+
+.hex-tag{
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--magenta);
+}
+.hex-card h3{
+  margin-bottom: var(--space-xs);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.hex-card p{
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--success);
+}
+
+/* variação usada na tecnologia que ainda está em aprendizado (ex: C++) */
+.hex-card.learning p,
+.hex-card.learning .hex-tag{
+  color: var(--amber);
+}
+
+/* ---------------------------------------------------------------------
+   6.6 Sobre mim
+   --------------------------------------------------------------------- */
+.about-grid{
+  display: grid;
+  grid-template-columns: .85fr 1.15fr;
+  gap: var(--space-2xl);
+  align-items: center;
+}
+
+.photo-frame{
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 1 / 1.1;
+  margin: 0 auto;
+  padding: var(--space-xs);
+  border: 1px solid var(--cyan);
+}
+.photo-frame::before{
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--line);
+  pointer-events: none;
+}
+.photo-frame img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  background: radial-gradient(circle at 50% 35%, rgba(0, 229, 255, 0.12), transparent 70%);
+  color: var(--cyan);
+}
+.photo-placeholder span{
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  font-weight: 800;
+}
+.photo-placeholder small{
+  padding: 0 12px;
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.stat-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+.stat-card{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px;
+  padding: 22px 18px;
+  border: 1px solid var(--line);
+  background: var(--bg-panel-2);
+}
+.stat-number,
+.stat-plus{
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--cyan);
+}
+.stat-number{ font-size: 2.1rem; }
+.stat-plus{ font-size: 1.3rem; }
+.stat-card p{
+  width: 100%;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: .76rem;
+  letter-spacing: .3px;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------
+   6.7 Projetos
+   --------------------------------------------------------------------- */
+.project-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+}
+
+.project-card{
+  padding: var(--space-lg);
+  border: 1px solid var(--line);
+  background: var(--bg-panel-2);
+  transition: transform var(--transition-base), border-color var(--transition-base);
+}
+.project-card:hover{
+  border-color: var(--cyan);
+  transform: translateY(-5px);
+}
+
+/* pilha de capturas de tela do projeto — cada imagem ocupa 100% da largura do card */
+.project-gallery{
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.project-gallery img{
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  transition: border-color var(--transition-base);
+}
+.project-card:hover .project-gallery img{
+  border-color: var(--cyan);
+}
+
+.project-card h3{
+  margin-bottom: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+.project-desc{
+  font-size: .98rem;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------
+   6.8 Contato
+   --------------------------------------------------------------------- */
+.channel-list{
+  display: grid;
+  gap: 14px;
+  max-width: 560px;
+}
+
+.channel-row{
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: 18px 20px;
+  text-align: left;
+  color: var(--text);
+  border: 1px solid var(--line);
+  background: var(--bg-panel);
+  transition: border-color var(--transition-base), transform var(--transition-base);
+}
+.channel-row:hover{
+  border-color: var(--cyan);
+  transform: translateX(4px);
+}
+
+.channel-icon{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--cyan);
+}
+.channel-icon svg{
+  width: 17px;
+  height: 17px;
+}
+
+.channel-row strong{
+  display: block;
+  font-size: .96rem;
+}
+.channel-row small{
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------
+   6.9 Rodapé & Toast
+   --------------------------------------------------------------------- */
+.footer{
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg) 60px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+}
+.footer-log{
+  font-size: .8rem;
+  color: var(--text-muted);
+}
+.back-top{
+  font-size: .78rem;
+  color: var(--text-muted);
+  transition: color var(--transition-base);
+}
+.back-top:hover{
+  color: var(--cyan);
+}
+
+/* notificação flutuante (ex: "e-mail copiado") */
+.toast{
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  z-index: var(--z-toast);
+  padding: 12px 20px;
+  transform: translateX(-50%) translateY(20px);
+  color: var(--text);
+  border: 1px solid var(--cyan);
+  background: var(--bg-panel-2);
+  font-family: var(--font-mono);
+  font-size: .82rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base), transform var(--transition-base);
+}
+.toast.show{
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* =====================================================================
+   7. RESPONSIVO
+   ===================================================================== */
+
+/* --- até 860px: empilha a seção "Sobre mim" --- */
+@media (max-width: 860px){
+  .about-grid{
+    grid-template-columns: 1fr;
+  }
+  .photo-frame{
+    margin: 0 auto var(--space-xs);
+  }
+}
+
+/* --- até 720px: navegação mobile, sem cursor customizado --- */
+@media (max-width: 720px){
+  body{
+    cursor: auto;
+  }
+  .crosshair{
+    display: none;
+  }
+
+  .nav-links{
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    max-height: 0;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+    background: rgba(5, 7, 13, 0.98);
+    border-bottom: 1px solid var(--line);
+    transition: max-height var(--transition-base);
+  }
+  .nav-links.open{
+    max-height: 240px;
+  }
+  .nav-links a{
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-links a::after{
+    display: none;
+  }
+  .nav-toggle{
+    display: flex;
+  }
+
+  .section{
+    padding: var(--space-3xl) 20px;
+  }
+  .stat-grid{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* --- até 480px: mini cards em coluna única --- */
+@media (max-width: 480px){
+  .stat-grid{
+    grid-template-columns: 1fr;
+  }
+}
+/* Estilos do Carrossel Cyberpunk/Tech */
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 255, 204, 0.2);
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  width: 100%;
+}
+
+.carousel-slide {
+  min-width: 100%;
+  object-fit: cover;
+  height: auto;
+  user-select: none;
+}
+
+/* Botões de navegação */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(10, 10, 15, 0.8);
+  color: #00ffcc;
+  border: 1px solid #00ffcc;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.2s ease;
+}
+
+.carousel-btn:hover {
+  background: #00ffcc;
+  color: #0a0a0f;
+  box-shadow: 0 0 10px #00ffcc;
+}
+
+.carousel-btn.prev { left: 10px; }
+.carousel-btn.next { right: 10px; }
+
+/* Indicadores de bolinhas/traços */
+.carousel-indicators {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 5;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.carousel-dot.active {
+  background: #00ffcc;
+  width: 20px;
+  box-shadow: 0 0 6px #00ffcc;
+}
+/* Estilização da localização e bio abaixo da foto */
+.about-location {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  color: #00ffcc;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.location-icon {
+  width: 18px;
+  height: 18px;
+  stroke: #00ffcc;
+  filter: drop-shadow(0 0 4px rgba(0, 255, 204, 0.4));
+}
+
+.about-bio {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #a0a0b0;
+  text-align: center;
+}
+
+/* Garante alinhamento à esquerda em telas maiores (desktop) */
+@media (min-width: 768px) {
+  .about-location {
+    justify-content: flex-start;
+  }
+  .about-bio {
+    text-align: left;
+  }
+}
