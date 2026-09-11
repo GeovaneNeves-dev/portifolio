@@ -1015,3 +1015,68 @@ button{
     text-align: left;
   }
 }
+/* =========================================================
+   AJUSTES DE RESPONSIVIDADE MOBILE
+   ========================================================= */
+
+@media (max-width: 720px) {
+
+  /* -------------------------
+     SKILLS
+     ------------------------- */
+  .hex-grid {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hex-card {
+    flex: 0 0 170px;
+  }
+
+  /* -------------------------
+     SOBRE MIM
+     ------------------------- */
+  .about-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .photo-frame {
+    width: min(280px, 80vw);
+    margin: 0 auto;
+  }
+
+  .about-location {
+    justify-content: center;
+  }
+
+  .about-bio {
+    text-align: center;
+  }
+
+  /* -------------------------
+     ESTATÍSTICAS
+     ------------------------- */
+  .stat-grid {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .hex-grid {
+    gap: 14px;
+  }
+
+  .hex-card {
+    width: 155px;
+    flex-basis: 155px;
+  }
+
+  .photo-frame {
+    width: min(260px, 82vw);
+  }
+}
