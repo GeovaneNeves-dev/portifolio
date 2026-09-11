@@ -1033,6 +1033,7 @@ button{
     flex: 0 0 170px;
   }
 
+
   /* -------------------------
      SOBRE MIM
      ------------------------- */
@@ -1078,5 +1079,9 @@ button{
 
   .photo-frame {
     width: min(260px, 82vw);
+  }
+   .section-inner{
+    justify-content: center;
+    align-items: center;
   }
 }
